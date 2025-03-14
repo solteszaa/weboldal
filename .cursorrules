@@ -388,3 +388,139 @@ When creating or modifying files:
 4. Follow the specified file creation order rigorously: 1. tools, 2. agents, 3. agency, 4. requirements.txt.
 
 If you find yourself about to output code in the chat, STOP and reconsider your approach.
+
+
+# Soltai Solutions AI Agent website
+
+## Overview
+This document outlines the structure and implementation guidelines for the Soltai Solutions website that focuses on AI agents and automation services. The platform will include a landing page and client-specific dashboards for managing AI agents.
+
+## Agency Structure
+Each client will have their own dedicated agency with Python-based AI agents organized according to the Agency Swarm framework.
+
+## Folder Structure
+
+```
+soltai_solutions/
+├── web/
+│   ├── pages/
+│   │   ├── index.js (Landing Page)
+│   │   ├── dashboard/[clientId].js (Client Dashboard)
+│   │   ├── agents/[agentId].js (Agent Configuration Page)
+│   │   └── agent-builder/[clientId].js (Agent Builder Interface)
+│   ├── components/
+│   │   └── Navigation.js (Navigation Component)
+│   ├── contexts/
+│   │   └── AuthContext.js (Authentication Context)
+│   ├── services/
+│   │   ├── api.js (API Services)
+│   │   ├── python-integration.js (Python Integration)
+│   │   └── agent-expansion.js (Agent Expansion Handler)
+│   └── styles/
+│       └── globals.css (Global Styles)
+├── clients/
+│   └── [clientId]/
+│       ├── agents/
+│       │   └── [agentName]/
+│       │       ├── __init__.py
+│       │       ├── agent_name.py
+│       │       ├── instructions.md
+│       │       └── tools/
+│       │           ├── tool_name1.py
+│       │           ├── tool_name2.py
+│       │           └── tool_name3.py
+│       ├── data/
+│       │   ├── agent_logs/
+│       │   └── metrics/
+│       ├── automations/
+│       │   ├── [automationId].json
+│       │   └── execution_history/
+│       └── agency.py
+└── requirements.txt
+```
+
+## Web Components
+
+### Landing Page (index.js)
+- Hero Section: Company logo, tagline about AI agents, and CTA button
+- Services Overview: AI Agents section, Automation Solutions, Integration capabilities
+- How It Works: Process visualization, client onboarding, technology stack
+- Contact Form: Name, email, company, requirements fields
+
+### Client Dashboard ([clientId].js)
+- Header: Client name, logo, account details, settings
+- AI Agents Overview: List of active agents, usage statistics, performance metrics
+- Automations: Active automations list, workflow visualizations, execution history
+- Integration Status: Connected systems, API status, data flow diagrams
+
+### Agent Configuration Page ([agentId].js)
+- Agent Details: Name, type, creation date, status, description
+- Configuration Panel: Behavior settings, integration points, notification preferences
+- Performance Metrics: Task completion rates, response time charts, accuracy measurements
+
+### Agent Builder Interface ([clientId].js)
+- Template Selection: Pre-defined templates, custom agent option
+- Code Editor: Python editor with syntax highlighting, package management
+- Testing Interface: Execution preview, test cases, performance evaluation
+- Deployment Options: Environment selection, resource allocation, scheduling
+
+## Agent Implementation
+
+### Agent Structure
+Each agent must follow the Agency Swarm framework structure:
+1. Agent class definition in agent_name.py
+2. Detailed instructions in instructions.md
+3. Tools folder containing all agent-specific tools
+
+### Tool Creation Process
+1. Identify necessary packages and APIs
+2. Create tool files in the tools folder
+3. Implement the run method with proper error handling
+4. Add test cases at the bottom of each file
+5. Document usage and requirements
+
+### Agent Instructions
+Each agent must have an instructions.md file containing:
+- Agent Role: Description of the agent's responsibilities
+- Goals: List of objectives the agent should achieve
+- Process Workflow: Step-by-step guide for task execution
+
+## Agency Configuration
+
+### agency.py
+- Import all agents for the client
+- Define communication flows between agents
+- Configure shared instructions and parameters
+- Add initialization and test methods
+
+### Expansion Handling
+- New clients get dedicated directories
+- Agent types are expanded through the agent-expansion service
+- All Python agents follow the Agency Swarm structure
+- New functionality is added in a modular way
+
+## Integration Guidelines
+
+### Python Compatibility
+- All agents must include standardized interfaces
+- Web interface supports Python 3.8+
+- Dependencies managed through virtual environments
+- Communication uses standardized JSON formats
+- All agents include proper documentation
+
+### API Services
+- Client data management: profiles, authentication, settings
+- Agent management: configuration, status, performance
+- Automation processes: workflows, execution data, logs
+- System integration: connection points, access tokens, data flow
+
+## Dependencies
+- Next.js: React framework for the website
+- React: UI library for components
+- TailwindCSS: Styling framework
+- Firebase: Authentication and database
+- Chart.js: Data visualization
+- React-flow: Workflow visualization
+- Pyodide: Python runtime for browsers
+- Monaco-editor: Code editor component
+- Agency Swarm: Agent framework for Python

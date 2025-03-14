@@ -1,5 +1,43 @@
-from agency_swarm import Agency
+import sys
+import os
+import platform
 
+# Python elérési útvonal állapotának ellenőrzése és kiírása
+print(f"Python elérési útvonalak: {sys.path}")
+print(f"Operációs rendszer: {platform.system()}")
+print(f"Jelenlegi könyvtár: {os.getcwd()}")
+
+# Adjuk hozzá a projekt gyökérkönyvtárát a Python útvonalhoz
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(current_dir))
+print(f"Projekt gyökérkönyvtár: {project_root}")
+
+# A gyökérkönyvtár hozzáadása a Python útvonalhoz
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+    print(f"Hozzáadva a Python útvonalhoz: {project_root}")
+
+try:
+    # Több importálási módszer kipróbálása
+    try:
+        from agency_swarm import Agency
+        print("Agency_swarm sikeresen importálva a normál módszerrel")
+    except ImportError as e1:
+        print(f"Normál importálás sikertelen: {e1}")
+        try:
+            # Másik importálási próbálkozás
+            import agency_swarm
+            Agency = agency_swarm.Agency
+            print("Agency_swarm sikeresen importálva az alternatív módszerrel")
+        except ImportError as e2:
+            print(f"Alternatív importálás is sikertelen: {e2}")
+            raise ImportError(f"Agency_swarm nem található: {e1}, {e2}")
+except ImportError:
+    print("Agency Swarm importálási hiba! Ellenőrizd, hogy telepítve van-e: pip install agency-swarm")
+    raise
+
+# Abszolút importok használata a relatív helyett
+sys.path.append(current_dir)
 from ceo_agent.ceo_agent import CEOAgent
 from content_agent.content_agent import ContentAgent
 from media_agent.media_agent import MediaAgent
@@ -17,7 +55,7 @@ agency = Agency(
         [ceo, media],  # A CEO tud kommunikálni a Media ügynökkel
         [content, media]  # A Content ügynök tud kommunikálni a Media ügynökkel
     ],
-    shared_instructions="agency_manifesto.md",  # Közös utasítások minden ügynöknek
+    shared_instructions=os.path.join(current_dir, "agency_manifesto.md"),  # Abszolút útvonal a közös utasításokhoz
     temperature=0.5,  # Alapértelmezett hőmérséklet az ügynökök számára
     max_prompt_tokens=25000  # Alapértelmezett token limit a beszélgetés történetében
 )
