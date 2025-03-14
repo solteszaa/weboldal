@@ -1,0 +1,17 @@
+[33mcommit 1d653655788eb383c5ed946d64a056b2ad23aced[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: solteszaa <soltai.solutions@gmail.com>
+Date:   Fri Mar 14 17:03:05 2025 +0100
+
+    render feltöltés
+
+M	.cursorrules
+A	Procfile
+A	check_installation.py
+A	clients/__init__.py
+A	clients/veyron_hungary/__init__.py
+M	clients/veyron_hungary/agency.py
+M	clients/veyron_hungary/ceo_agent/ceo_agent.py
+M	clients/veyron_hungary/content_agent/content_agent.py
+M	clients/veyron_hungary/media_agent/media_agent.py
+M	render.yaml
+M	requirements.txt
