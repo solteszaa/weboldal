@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veyron Hungary - Luxusingatlan AI Ügynökség</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <h1>Veyron Hungary</h1>
+                <h2>Luxusingatlan Marketing AI Ügynökség</h2>
+            </div>
+        </header>
+
+        <main>
+            <section class="intro">
+                <h3>Automatizált luxusingatlan marketing megoldás</h3>
+                <p>Ez az AI ügynökség segít elegáns és meggyőző marketing tartalmakat készíteni luxusingatlanokhoz, 
+                kezelni a képeket és automatikusan továbbítani azokat a kívánt platformokra.</p>
+            </section>
+
+            <section class="features">
+                <div class="feature">
+                    <i class="fas fa-pen-fancy"></i>
+                    <h4>Elegáns Tartalom</h4>
+                    <p>Prémium színvonalú szövegek generálása az OpenAI API segítségével</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-image"></i>
+                    <h4>Képkezelés</h4>
+                    <p>Ingatlanképek feltöltése és tárolása ImgBB platformon</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-sync-alt"></i>
+                    <h4>Automatizáció</h4>
+                    <p>Tartalmak automatikus küldése a megadott webhook-ra</p>
+                </div>
+            </section>
+
+            <section class="chat-section">
+                <h3>Beszélgetés az AI Ügynökséggel</h3>
+                <div class="chat-container">
+                    <div id="chat-messages">
+                        <div class="message system">
+                            <div class="message-content">
+                                <p>Üdvözlünk a Veyron Hungary AI Ügynökségnél! Miben segíthetek a luxusingatlanok marketingjével kapcsolatban?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea id="user-input" placeholder="Írd le az üzenetedet..."></textarea>
+                        <button id="send-button">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="upload-section">
+                <h3>Képfeltöltés</h3>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="upload-container">
+                        <label for="image-upload" class="upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Válassz képet</span>
+                        </label>
+                        <input type="file" id="image-upload" name="image" accept="image/*" style="display:none;">
+                        <div id="selected-file">Nincs kiválasztott fájl</div>
+                    </div>
+                    <button type="submit" id="upload-button" disabled>Feltöltés</button>
+                </form>
+                <div id="upload-status"></div>
+                <div id="uploaded-images"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Veyron Hungary - Minden jog fenntartva</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html> 

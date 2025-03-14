@@ -1,0 +1,10 @@
+{
+  "id": "agent-1",
+  "name": "Email Asszisztens",
+  "description": "Automatikusan kategorizálja és válaszol az egyszerű emailekre.",
+  "type": "Kommunikációs",
+  "status": "active",
+  "clientId": "demo",
+  "lastActive": "2023-03-13T10:30:00Z",
+  "createdAt": "2023-01-15T08:00:00Z"
+} 
