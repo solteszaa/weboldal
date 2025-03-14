@@ -3,6 +3,7 @@ import importlib
 import json
 import logging
 import base64
+import sys
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template, send_from_directory, abort, redirect, url_for
 from flask_cors import CORS
@@ -23,6 +24,16 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'clients'), exist_ok=True)
 
+# Kliens könyvtár létrehozása, ha nem létezik
+base_dir = os.path.dirname(os.path.dirname(__file__))
+clients_dir = os.path.join(base_dir, 'clients')
+os.makedirs(clients_dir, exist_ok=True)
+
+# Python elérési utak beállítása
+if base_dir not in sys.path:
+    sys.path.insert(0, base_dir)
+    print(f"Base directory added to Python path: {base_dir}")
+
 # Logging beállítása
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,10 +43,13 @@ client_agencies = {}
 
 # Elérhető ügyfelek listája
 def get_available_clients():
-    clients_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'clients')
-    return [d for d in os.listdir(clients_dir) 
-            if os.path.isdir(os.path.join(clients_dir, d)) and 
-            os.path.exists(os.path.join(clients_dir, d, 'agency.py'))]
+    try:
+        return [d for d in os.listdir(clients_dir) 
+                if os.path.isdir(os.path.join(clients_dir, d)) and 
+                os.path.exists(os.path.join(clients_dir, d, 'agency.py'))]
+    except Exception as e:
+        logger.error(f"Hiba az elérhető ügyfelek lekérdezésekor: {str(e)}")
+        return []
 
 # Ügynökség dinamikus betöltése
 def load_agency(client_id):
@@ -219,9 +233,6 @@ def send_webhook(client_id):
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path)
-
-# Hiányzó sys modul importálása
-import sys
 
 # Futtatás
 if __name__ == '__main__':
