@@ -173,3 +173,47 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 node_modules
+
+# Python-specifikus kizárások
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Környezeti változók és titkos kulcsok
+.env
+.env.*
+!.env.example
+
+# Virtuális környezet
+venv/
+ENV/
+
+# IDE-specifikus fájlok
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Operációs rendszer-specifikus fájlok
+.DS_Store
+Thumbs.db
+
+# Feltöltött képek tárolására szolgáló mappa
+uploads/

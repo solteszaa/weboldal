@@ -1,157 +1,128 @@
-# SoltAI Solutions Weboldal
+# Soltai Solutions AI Ügynök Platform
 
-Ez a projekt a SoltAI Solutions weboldala, amely személyre szabott AI agenteket és automatizációs megoldásokat kínál ügyfelei számára.
+Ez a repository tartalmazza a Soltai Solutions AI ügynök platformot, amely lehetővé teszi több ügyfél számára dedikált AI ügynökségek kezelését egy központosított rendszeren keresztül. Az ügynökök az Agency Swarm keretrendszert használják.
 
-## Projekt Struktúra
-
-A projekt két fő részből áll:
-
-1. **Webes Felület (Next.js)**: A `soltai-webapp` mappában található, amely a felhasználói felületet biztosítja.
-2. **AI Agentek (Python)**: A `clients` mappában található, amely az ügyfelek számára létrehozott AI agenteket tartalmazza.
-
-### Webes Felület Struktúra
+## Projekt struktúra
 
 ```
-soltai-webapp/
-├── src/
-│   ├── app/
-│   │   ├── api/                  # API route-ok
-│   │   │   ├── agents/           # AI agentek kezelése
-│   │   │   └── clients/          # Ügyfelek kezelése
-│   │   ├── dashboard/            # Dashboard oldalak
-│   │   │   └── [clientId]/       # Ügyfél-specifikus dashboard
-│   │   │       └── agents/       # Agent kezelő oldalak
-│   │   ├── globals.css           # Globális stílusok
-│   │   ├── layout.tsx            # Fő layout
-│   │   └── page.tsx              # Főoldal (bejelentkezés)
-│   ├── components/               # Újrafelhasználható komponensek
-│   └── lib/                      # Segédfüggvények, utility-k
-├── public/                       # Statikus fájlok
-├── package.json                  # Függőségek
-└── tailwind.config.js            # Tailwind CSS konfiguráció
+soltai-ai-agents/
+├── clients/                             # Minden ügyfél külön mappában
+│   ├── veyron_hungary/                  # Veyron Hungary ügyfél
+│   │   ├── agency.py                    # Ügynökség definíció
+│   │   ├── agency_manifesto.md          # Közös utasítások
+│   │   ├── ceo_agent/                   # CEO ügynök
+│   │   ├── content_agent/               # Tartalomgyártó ügynök
+│   │   └── media_agent/                 # Médiakezelő ügynök
+│   └── masodik_ugyfel/                  # Második ügyfél
+│       └── ...
+│
+├── web/                                 # Web alkalmazás
+│   ├── app.py                           # Flask alkalmazás
+│   ├── static/                          # Statikus fájlok
+│   │   └── css/                         # CSS fájlok
+│   │       └── style.css                # Fő stíluslap
+│   └── templates/                       # HTML sablonok
+│       ├── index.html                   # Főoldal
+│       └── client.html                  # Ügyfél oldal
+│
+├── uploads/                             # Feltöltött fájlok
+│   └── clients/                         # Ügyfél-specifikus feltöltések
+│       └── veyron_hungary/              # Veyron Hungary feltöltései
+│
+├── requirements.txt                     # Fő függőségek
+├── render.yaml                          # Render konfiguráció
+└── .gitignore                           # Git kizárások
 ```
 
-### AI Agentek Struktúra
+## Telepítés és futtatás
 
-```
-clients/
-├── demo/                         # Demo ügyfél
-│   ├── agents/                   # Az ügyfél agentjei
-│   │   ├── agent-1/              # Email Asszisztens agent
-│   │   │   ├── tools/            # Agent eszközei
-│   │   │   ├── agent.py          # Agent implementáció
-│   │   │   ├── instructions.md   # Agent utasítások
-│   │   │   └── metadata.json     # Agent metaadatok
-│   │   ├── agent-2/              # Adatelemző agent
-│   │   └── agent-3/              # Ütemező Bot agent
-│   ├── agency.py                 # Agency definíció
-│   ├── agency_manifesto.md       # Agency közös utasítások
-│   └── requirements.txt          # Python függőségek
-└── [client-id]/                  # További ügyfelek
-```
+### Előfeltételek
 
-## Telepítés és Futtatás
+- Python 3.9+
+- pip
 
-### Webes Felület
+### Telepítési lépések
 
-1. Telepítsd a függőségeket:
+1. Klónozd a repository-t:
 
 ```bash
-cd soltai-webapp
-npm install
+git clone https://github.com/felhasznaloneved/soltai-ai-agents.git
+cd soltai-ai-agents
 ```
 
-2. Indítsd el a fejlesztői szervert:
+2. Hozz létre egy virtuális környezetet:
 
 ```bash
-npm run dev
+python -m venv venv
 ```
 
-3. Nyisd meg a böngészőben: [http://localhost:3000](http://localhost:3000)
+3. Aktiváld a virtuális környezetet:
 
-### AI Agentek
+Windows:
+```bash
+venv\Scripts\activate
+```
 
-1. Telepítsd a Python függőségeket:
+Unix/MacOS:
+```bash
+source venv/bin/activate
+```
+
+4. Telepítsd a függőségeket:
 
 ```bash
-cd clients/demo
 pip install -r requirements.txt
 ```
 
-2. Indítsd el az agency-t (opcionális, csak teszteléshez):
+5. Hozz létre egy `.env` fájlt a gyökérmappában:
 
-```bash
-python agency.py
+```
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx
+IMGBB_API_KEY=xxxxxxxxxxxxxxx
+WEBHOOK_URL=https://webhook.example.com/endpoint
 ```
 
-## Használat
-
-### Bejelentkezés
-
-A főoldalon található bejelentkezési űrlapon keresztül lehet belépni. A demó fiókhoz használd a következő adatokat:
-- Felhasználónév: `demo`
-- Jelszó: `demo123`
-
-### Dashboard
-
-Bejelentkezés után a dashboard oldalon láthatók az elérhető AI agentek. Innen lehet:
-- Megtekinteni az agenteket
-- Új agentet létrehozni
-- Kezelni a meglévő agenteket
-
-### Agent Kezelés
-
-Az agent részletes oldalán lehet:
-- Megtekinteni az agent részleteit
-- Kommunikálni az agenttel
-- Aktiválni/deaktiválni az agentet
-
-## Deployment
-
-### Webes Felület (Vercel)
-
-A webes felület könnyen deployolható a Vercel platformra:
+### Futtatás lokálisan
 
 ```bash
-cd soltai-webapp
-vercel
+cd web
+python app.py
 ```
 
-### AI Agentek (Render)
+Az alkalmazás ezután elérhető a [http://localhost:5000](http://localhost:5000) címen.
 
-Az AI agentek futtatásához egy Python környezetre van szükség, például a Render szolgáltatásra:
+## Új ügyfél hozzáadása
 
-1. Hozz létre egy új Web Service-t a Render-en
-2. Állítsd be a forráskód helyét (GitHub repository)
-3. Állítsd be a build parancsot: `pip install -r clients/demo/requirements.txt`
-4. Állítsd be a start parancsot: `python clients/demo/agency.py`
+Az új ügyfél hozzáadásához kövesd ezeket a lépéseket:
 
-## Architektúra
+1. Hozz létre egy új mappát az ügyfél számára a `clients` mappában:
 
-A rendszer a következő módon működik:
+```bash
+mkdir -p clients/uj_ugyfel
+```
 
-1. A felhasználó belép a webes felületen
-2. A dashboard megjeleníti az elérhető AI agenteket
-3. A felhasználó kommunikálhat az agentekkel a webes felületen keresztül
-4. A webes felület API hívásokat küld a háttérben futó Python AI agenteknek
-5. Az AI agentek feldolgozzák a kéréseket és visszaküldik a válaszokat
+2. Hozd létre az agency.py, agency_manifesto.md fájlokat és az ügynök mappákat az Agency Swarm keretrendszer alapján.
 
-## Fejlesztés
+3. Az új ügyfél automatikusan megjelenik a platformon, amint az agency.py fájl elkészül.
 
-### Új Agent Létrehozása
+## Render.com telepítés
 
-1. Hozz létre egy új mappát az ügyfél `agents` mappájában
-2. Készítsd el az agent implementációját (`agent.py`)
-3. Hozd létre az agent eszközeit a `tools` mappában
-4. Írd meg az agent utasításait (`instructions.md`)
-5. Frissítsd az agency fájlt (`agency.py`)
+1. Kapcsold össze a GitHub repository-t a Render.com-mal.
 
-### Új Ügyfél Létrehozása
+2. Új Web Service létrehozásakor használd a `render.yaml` konfigurációs fájlt.
 
-1. Hozz létre egy új mappát a `clients` mappában
-2. Másold át a szükséges fájlokat a demo ügyfélből
-3. Módosítsd a fájlokat az új ügyfél igényei szerint
+3. Add meg a szükséges környezeti változókat:
+   - `OPENAI_API_KEY`
+   - `IMGBB_API_KEY`
+   - `WEBHOOK_URL`
 
-## Licenc
+4. Indítsd el a szolgáltatást.
 
-Minden jog fenntartva © SoltAI Solutions 
+## Használt technológiák
+
+- Flask: Web keretrendszer
+- Agency Swarm: AI ügynök keretrendszer
+- Bootstrap: Frontend megjelenítés
+- OpenAI: AI modellek
+- ImgBB: Képtárolás
+- Webhook: Külső integráció 
