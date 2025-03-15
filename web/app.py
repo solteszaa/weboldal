@@ -5,7 +5,7 @@ import logging
 import base64
 import sys
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template, send_from_directory, abort, redirect, url_for
+from flask import Flask, request, jsonify, render_template, send_from_directory, abort, redirect, url_for, session, flash
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -15,6 +15,9 @@ load_dotenv()
 # Flask alkalmazás létrehozása
 app = Flask(__name__, static_folder='static', template_folder='templates')
 CORS(app)
+
+# Titkos kulcs beállítása a session kezeléséhez
+app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_change_in_production')
 
 # Alapvető konfigurációk
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max feltöltési méret
@@ -37,6 +40,13 @@ if base_dir not in sys.path:
 # Logging beállítása
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Egyszerű felhasználói adatok fejlesztési célokra
+# Figyelem: Éles környezetben ne így tárold a jelszavakat!
+users = {
+    'admin': 'admin123',
+    'demo': 'demo123'
+}
 
 # Ügyfél ügynökségek tárolása
 client_agencies = {}
@@ -93,12 +103,37 @@ def load_agency(client_id):
 # Főoldal - ügyfelek listája
 @app.route('/')
 def index():
-    clients = get_available_clients()
-    return render_template('index.html', clients=clients)
+    # Ellenőrizzük, hogy be van-e jelentkezve a felhasználó
+    show_clients = 'logged_in' in session and session['logged_in']
+    clients = get_available_clients() if show_clients else []
+    return render_template('index.html', clients=clients, show_clients=show_clients)
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    if username in users and users[username] == password:
+        session['logged_in'] = True
+        session['username'] = username
+        return redirect(url_for('index'))
+    else:
+        flash('Hibás felhasználónév vagy jelszó!', 'danger')
+        return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    return redirect(url_for('index'))
 
 # Ügyfél kezdőlapja
 @app.route('/client/<client_id>')
 def client_index(client_id):
+    # Ellenőrizzük, hogy be van-e jelentkezve a felhasználó
+    if 'logged_in' not in session or not session['logged_in']:
+        return redirect(url_for('index'))
+    
     # Ellenőrizzük, hogy létezik-e az ügyfél
     clients = get_available_clients()
     if client_id not in clients:
