@@ -1,8 +1,8 @@
 /* Főstílusok */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #121212;
+    color: #f8f9fa;
 }
 
 /* Fejléc stílusok */
@@ -12,8 +12,10 @@ header {
 
 /* Kártya stílusok */
 .card {
+    background-color: #1e1e1e;
+    border-color: #333;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease;
 }
 
@@ -26,6 +28,8 @@ header {
 }
 
 .card-header {
+    background-color: #0d6efd;
+    color: white;
     border-top-left-radius: 10px !important;
     border-top-right-radius: 10px !important;
 }
@@ -33,8 +37,8 @@ header {
 /* Chat konténer stílusok */
 #chat-container {
     position: relative;
-    background-color: white;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    background-color: #1e1e1e;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Üzenet stílusok */
@@ -44,7 +48,8 @@ header {
 }
 
 .user-message {
-    background-color: #f8f9fa;
+    background-color: #2a2a2a;
+    color: #f8f9fa;
     padding: 10px 15px;
     border-radius: 15px;
     margin-left: 20px;
@@ -53,7 +58,8 @@ header {
 }
 
 .agent-message {
-    background-color: #e3f2fd;
+    background-color: #0d6efd;
+    color: white;
     padding: 10px 15px;
     border-radius: 15px;
     margin-right: 20px;
@@ -64,7 +70,7 @@ header {
 .message-header {
     font-size: 0.85rem;
     margin-bottom: 5px;
-    color: #666;
+    color: #aaa;
 }
 
 .message-content {
@@ -72,22 +78,46 @@ header {
 }
 
 .message-image img {
-    border: 1px solid #ddd;
+    border: 1px solid #444;
 }
 
 /* Gomb stílusok */
 .btn-primary {
-    background-color: #4e73df;
-    border-color: #4e73df;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
 }
 
 .btn-primary:hover {
-    background-color: #2e59d9;
-    border-color: #2653d4;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Nav stílusok */
+.navbar {
+    background-color: #1e1e1e !important;
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .navbar-nav .nav-link {
+    color: #f8f9fa !important;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+    color: #0d6efd !important;
 }
 
 /* Lábléc stílusok */
 footer {
-    background-color: #fff;
-    border-top: 1px solid #e9ecef;
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    color: #aaa;
+}
+
+/* Egyéb stílusok */
+.text-muted {
+    color: #aaa !important;
+}
+
+.bg-light {
+    background-color: #1e1e1e !important;
 } 
