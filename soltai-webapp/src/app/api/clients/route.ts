@@ -10,59 +10,49 @@ export interface Client {
   createdAt: string;
 }
 
-// Demó adatok - ezt majd fájlba vagy adatbázisba kell helyezni
-const DEMO_CLIENTS: Client[] = [
-  {
-    id: 'demo',
-    name: 'Demo Felhasználó',
-    email: 'demo@example.com',
-    createdAt: '2023-01-01T00:00:00Z',
-  },
-];
+// Veyron kliens adatok
+const VEYRON_CLIENT: Client = {
+  id: 'veyron',
+  name: 'Veyron Hungary',
+  email: 'info@veyron.hu',
+  createdAt: '2024-03-17T00:00:00Z',
+};
 
 // Kliensek mappájának elérési útja
 const CLIENTS_DIR = path.join(process.cwd(), 'clients');
+const VEYRON_DIR = path.join(CLIENTS_DIR, 'veyron');
 
-// Segédfüggvény a kliensek könyvtárának létrehozásához, ha nem létezik
-function ensureClientsDirectory() {
-  if (!fs.existsSync(CLIENTS_DIR)) {
-    fs.mkdirSync(CLIENTS_DIR, { recursive: true });
+// Segédfüggvény a Veyron könyvtár létrehozásához, ha nem létezik
+function ensureVeyronDirectory() {
+  if (!fs.existsSync(VEYRON_DIR)) {
+    fs.mkdirSync(VEYRON_DIR, { recursive: true });
+    
+    // Alkönyvtárak létrehozása
+    const subDirs = ['agents', 'data', 'automations'];
+    subDirs.forEach(dir => {
+      fs.mkdirSync(path.join(VEYRON_DIR, dir), { recursive: true });
+    });
+    
+    // Metaadatok mentése
+    fs.writeFileSync(
+      path.join(VEYRON_DIR, 'metadata.json'),
+      JSON.stringify(VEYRON_CLIENT, null, 2)
+    );
   }
 }
 
 // GET /api/clients
 export async function GET() {
   try {
-    ensureClientsDirectory();
-    
-    // Valós alkalmazásban itt adatbázisból olvasnánk ki az adatokat
-    // Ebben a példában a kliensek mappáit olvassuk ki a fájlrendszerből
-    const clients = [...DEMO_CLIENTS];
-    
-    // Olvassuk ki a kliensek könyvtárait (kivéve a demo)
-    const directories = fs.readdirSync(CLIENTS_DIR, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory() && dirent.name !== 'demo')
-      .map(dirent => dirent.name);
-    
-    // Minden létező könyvtárhoz hozzáadunk egy klienst
-    for (const dir of directories) {
-      // Itt olvashatnánk ki a kliens adatait egy metadata.json fájlból
-      clients.push({
-        id: dir,
-        name: `${dir} Ügyfél`,
-        email: `${dir}@example.com`,
-        createdAt: new Date().toISOString(),
-      });
-    }
-    
-    return NextResponse.json(clients);
+    ensureVeyronDirectory();
+    return NextResponse.json([VEYRON_CLIENT]);
   } catch (error) {
-    console.error('Hiba a kliensek lekérése közben:', error);
-    return NextResponse.json({ error: 'Hiba a kliensek lekérése közben' }, { status: 500 });
+    console.error('Hiba a kliens adatok lekérése közben:', error);
+    return NextResponse.json({ error: 'Hiba a kliens adatok lekérése közben' }, { status: 500 });
   }
 }
 
-// POST /api/clients
+// POST /api/clients - ez a végpont most csak a Veyron adatok frissítésére szolgál
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -75,37 +65,25 @@ export async function POST(request: Request) {
       );
     }
     
-    // Generáljunk egy egyedi azonosítót a kliensnek (valós alkalmazásban DB ID lenne)
-    const id = `client-${Date.now()}`;
+    ensureVeyronDirectory();
     
-    ensureClientsDirectory();
-    
-    // Új kliens könyvtár létrehozása
-    const clientDir = path.join(CLIENTS_DIR, id);
-    fs.mkdirSync(clientDir, { recursive: true });
-    
-    // Alkönyvtárak létrehozása a klienshez
-    const subDirs = ['agents', 'data', 'automations'];
-    subDirs.forEach(dir => {
-      fs.mkdirSync(path.join(clientDir, dir), { recursive: true });
-    });
-    
-    // Metaadatok mentése (valós alkalmazásban DB-be mentődne)
-    const metadata = {
-      id,
+    // Frissített adatok
+    const updatedClient = {
+      ...VEYRON_CLIENT,
       name,
       email,
-      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     
+    // Metaadatok mentése
     fs.writeFileSync(
-      path.join(clientDir, 'metadata.json'),
-      JSON.stringify(metadata, null, 2)
+      path.join(VEYRON_DIR, 'metadata.json'),
+      JSON.stringify(updatedClient, null, 2)
     );
     
-    return NextResponse.json(metadata, { status: 201 });
+    return NextResponse.json(updatedClient);
   } catch (error) {
-    console.error('Hiba a kliens létrehozása közben:', error);
-    return NextResponse.json({ error: 'Hiba a kliens létrehozása közben' }, { status: 500 });
+    console.error('Hiba a kliens adatok frissítése közben:', error);
+    return NextResponse.json({ error: 'Hiba a kliens adatok frissítése közben' }, { status: 500 });
   }
 } 

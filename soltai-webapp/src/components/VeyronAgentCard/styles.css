@@ -1,0 +1,115 @@
+.veyron-agent-card {
+  width: 100%;
+  max-width: 450px;
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 20px;
+}
+
+.veyron-agent-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.veyron-agent-logo {
+  height: 120px;
+  background-color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.veyron-agent-logo img {
+  max-height: 80px;
+  max-width: 80%;
+}
+
+.veyron-agent-content {
+  padding: 25px;
+}
+
+.veyron-agent-content h3 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.veyron-agent-content p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.veyron-agent-features {
+  display: flex;
+  justify-content: space-between;
+  margin: 25px 0;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-basis: 33%;
+}
+
+.feature-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.feature-text {
+  font-size: 13px;
+  color: #666;
+}
+
+.veyron-agent-button {
+  width: 100%;
+  padding: 12px 0;
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.veyron-agent-button:hover {
+  background-color: #1a2530;
+}
+
+.veyron-agent-button.loading {
+  background-color: #7f8c8d;
+  cursor: not-allowed;
+}
+
+@media (max-width: 580px) {
+  .veyron-agent-card {
+    max-width: 95%;
+    margin: 15px auto;
+  }
+  
+  .veyron-agent-features {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .feature-item {
+    flex-direction: row;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  
+  .feature-icon {
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+} 

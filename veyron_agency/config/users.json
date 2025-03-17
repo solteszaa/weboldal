@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "username": "veyron hungary",
+      "password": "veyron123",
+      "role": "client",
+      "company": "Veyron Hungary",
+      "created_at": "2024-03-17"
+    }
+  ]
+} 

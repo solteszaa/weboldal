@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 export default function Home() {
   const [username, setUsername] = useState('');
@@ -10,11 +9,10 @@ export default function Home() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  // Demó bejelentkezés, valós alkalmazásban természetesen biztonságosabb auth rendszert használnánk
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'demo' && password === 'demo123') {
-      router.push('/dashboard/demo');
+    if (username === 'veyron hungary' && password === 'veyron123') {
+      router.push('/dashboard/veyron');
     } else {
       setError('Hibás felhasználónév vagy jelszó');
     }
@@ -29,10 +27,10 @@ export default function Home() {
       {/* Főtartalom konténer */}
       <div className="z-10 flex flex-col items-center justify-center gap-8 px-4 text-center">
         <h1 className="text-5xl md:text-7xl font-serif font-extrabold text-white tracking-wider">
-          SOLTAI SOLUTIONS
+          VEYRON HUNGARY
         </h1>
         <p className="text-xl text-gray-300 max-w-md">
-          Személyreszabott AI agentek és automatizációs megoldások az Ön vállalkozása számára
+          Személyreszabott AI agentek és automatizációs megoldások
         </p>
         
         {/* Bejelentkezési form */}
@@ -74,9 +72,6 @@ export default function Home() {
                 Bejelentkezés
               </button>
             </form>
-            <div className="mt-4 text-sm text-gray-400">
-              <p>Demó hozzáféréshez: felhasználónév: <strong>demo</strong>, jelszó: <strong>demo123</strong></p>
-            </div>
           </div>
         </div>
       </div>
@@ -84,7 +79,7 @@ export default function Home() {
       {/* Copyright szöveg az oldal alján */}
       <footer className="fixed bottom-0 w-full p-4 text-center">
         <div className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} SoltAI Solutions. Minden jog fenntartva.
+          &copy; {new Date().getFullYear()} Veyron Hungary. Minden jog fenntartva.
         </div>
       </footer>
     </main>
