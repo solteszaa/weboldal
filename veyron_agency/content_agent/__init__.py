@@ -1,1 +1,1 @@
-from .content_agent import ContentAgent 
+from veyron_agency.content_agent.content_agent import ContentAgent 

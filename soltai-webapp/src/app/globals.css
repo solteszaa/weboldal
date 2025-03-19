@@ -25,4 +25,11 @@ body {
     pointer-events: none;
     animation: spotlight 5s ease-in-out infinite;
   }
+  
+  .glass-header {
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
 } 

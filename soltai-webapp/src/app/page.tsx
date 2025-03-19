@@ -1,9 +1,14 @@
 'use client';
 
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Footer from '@/components/Footer';
 
-export default function Home() {
+/**
+ * Főoldal komponens - Bejelentkezési képernyő a SoltAI Solutions alkalmazáshoz
+ */
+export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,7 +32,7 @@ export default function Home() {
       {/* Főtartalom konténer */}
       <div className="z-10 flex flex-col items-center justify-center gap-8 px-4 text-center">
         <h1 className="text-5xl md:text-7xl font-serif font-extrabold text-white tracking-wider">
-          VEYRON HUNGARY
+          SOLTAI SOLUTIONS
         </h1>
         <p className="text-xl text-gray-300 max-w-md">
           Személyreszabott AI agentek és automatizációs megoldások
@@ -76,12 +81,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Copyright szöveg az oldal alján */}
-      <footer className="fixed bottom-0 w-full p-4 text-center">
-        <div className="text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Veyron Hungary. Minden jog fenntartva.
-        </div>
-      </footer>
+      {/* Copyright */}
+      <Footer />
     </main>
   );
 } 

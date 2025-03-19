@@ -1,4 +1,6 @@
 {
+  "/page": "app/page.js",
   "/dashboard/veyron/page": "app/dashboard/veyron/page.js",
-  "/page": "app/page.js"
+  "/api/veyron/upload-image/route": "app/api/veyron/upload-image/route.js",
+  "/api/veyron/social-media/route": "app/api/veyron/social-media/route.js"
 }

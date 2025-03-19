@@ -1,10 +1,14 @@
 'use client';
 
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
-// Példa Agent interfész
+/**
+ * AI Agent interfész definíció
+ */
 interface AIAgent {
   id: string;
   name: string;
@@ -14,7 +18,7 @@ interface AIAgent {
   lastActive?: string;
 }
 
-// Demó adatok - valós alkalmazásban API-ból jönnének
+// Demo adatok - valós alkalmazásban API-ból jönnének
 const DEMO_AGENTS: AIAgent[] = [
   {
     id: 'agent-1',
@@ -41,26 +45,35 @@ const DEMO_AGENTS: AIAgent[] = [
   },
 ];
 
-export default function ClientDashboard() {
+/**
+ * Kliens specifikus irányítópult komponens
+ * Dinamikus útvonal alapján jeleníti meg az adott ügyfél agent-jeit
+ */
+export default function ClientDashboardPage() {
   const { clientId } = useParams();
   const [agents, setAgents] = useState<AIAgent[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Valós alkalmazásban itt API hívás lenne a klienshez tartozó agentekért
+    // Adott klienshez tartozó agentek betöltése
     const fetchAgents = async () => {
-      // Szimulált API késleltetés
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Demó kliens esetén a demó adatokat adjuk vissza
-      if (clientId === 'demo') {
-        setAgents(DEMO_AGENTS);
-      } else {
-        // Valós esetben API hívás lenne itt
-        setAgents([]);
+      try {
+        // Szimulált API késleltetés
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Demo kliens esetén a demo adatokat adjuk vissza
+        if (clientId === 'demo') {
+          setAgents(DEMO_AGENTS);
+        } else {
+          // Valós esetben API hívás lenne itt
+          // TODO: API hívás implementálása a klienshez tartozó agentekért
+          setAgents([]);
+        }
+      } catch (error) {
+        console.error('Hiba az agentek betöltése közben:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
 
     fetchAgents();
@@ -68,8 +81,8 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-dark-bg text-white flex flex-col">
-      {/* Header */}
-      <header className="bg-dark-surface p-4 shadow-md">
+      {/* Üveg hatású fejléc */}
+      <header className="glass-header p-4 shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold font-serif">SOLTAI SOLUTIONS</h1>
           <div className="flex items-center gap-4">
@@ -84,7 +97,7 @@ export default function ClientDashboard() {
         </div>
       </header>
 
-      {/* Main content */}
+      {/* Fő tartalom */}
       <main className="container mx-auto px-4 py-8 mb-16">
         <h2 className="text-3xl font-bold mb-2">Irányítópult</h2>
         <p className="text-gray-400 mb-8">AI Agentjei és automatizációi egy helyen</p>
@@ -152,12 +165,8 @@ export default function ClientDashboard() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-dark-surface p-4 w-full">
-        <div className="container mx-auto text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} SoltAI Solutions. Minden jog fenntartva.
-        </div>
-      </footer>
+      {/* Lábléc a copyright szöveggel */}
+      <Footer />
     </div>
   );
 } 

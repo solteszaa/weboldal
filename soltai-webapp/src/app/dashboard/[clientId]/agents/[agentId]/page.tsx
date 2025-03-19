@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
-// Agent interfész
+/**
+ * Agent interfész - egy AI agent adatstruktúrája
+ */
 interface Agent {
   id: string;
   name: string;
@@ -16,14 +20,18 @@ interface Agent {
   createdAt: string;
 }
 
-// Chat üzenet interfész
+/**
+ * Chat üzenet interfész - egy beszélgetésen belüli üzenet adatstruktúrája
+ */
 interface ChatMessage {
   role: 'user' | 'agent';
   content: string;
   timestamp: string;
 }
 
-// Beszélgetés interfész
+/**
+ * Beszélgetés interfész - egy teljes beszélgetés adatstruktúrája
+ */
 interface Conversation {
   id: string;
   title: string;
@@ -31,9 +39,16 @@ interface Conversation {
   messages: ChatMessage[];
 }
 
+/**
+ * Agent részletes oldal komponens
+ * Az adott kliens adott agent-jével való chat funkcionalitás
+ */
 export default function AgentDetailPage() {
+  // Útvonal paraméterek és navigáció
   const { clientId, agentId } = useParams();
   const router = useRouter();
+  
+  // Állapotok
   const [agent, setAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -42,9 +57,19 @@ export default function AgentDetailPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [showConversationHistory, setShowConversationHistory] = useState(false);
+  
+  // Referencia a chat konténerhez a görgetéshez
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Görgetés a chat aljára új üzenet érkezésekor
   useEffect(() => {
-    // Agent adatok betöltése
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
+
+  // Agent adatok betöltése
+  useEffect(() => {
     const fetchAgentDetails = async () => {
       setLoading(true);
       
@@ -154,6 +179,7 @@ export default function AgentDetailPage() {
       
       // Valós alkalmazásban itt API hívás lenne
       try {
+        // TODO: Agent adatok lekérése API-ból
         // const response = await fetch(`/api/agents/${agentId}?clientId=${clientId}`);
         // if (!response.ok) throw new Error('Nem sikerült betölteni az agent adatait');
         // const data = await response.json();
@@ -175,7 +201,9 @@ export default function AgentDetailPage() {
     fetchAgentDetails();
   }, [clientId, agentId, router]);
 
-  // Üzenet küldése az agentnek
+  /**
+   * Üzenet küldése az agentnek
+   */
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -195,6 +223,7 @@ export default function AgentDetailPage() {
     
     try {
       // Valós alkalmazásban itt API hívás lenne
+      // TODO: Üzenet küldése az agentnek API-n keresztül
       // const response = await fetch(`/api/agents/${agentId}/chat`, {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
@@ -207,6 +236,7 @@ export default function AgentDetailPage() {
       // Demó válasz
       await new Promise(resolve => setTimeout(resolve, 1000)); // Szimulált késleltetés
       
+      // Agent specifikus válaszok generálása
       let responseContent = '';
       if (agent.id === 'agent-1') {
         responseContent = `Köszönöm az üzenetet! Feldolgoztam a kérést és kategorizáltam. Hamarosan válaszolok a részletekkel kapcsolatban.`;
@@ -254,20 +284,24 @@ export default function AgentDetailPage() {
       }
     } catch (error) {
       console.error('Hiba az üzenet küldése közben:', error);
-      alert('Nem sikerült elküldeni az üzenetet. Kérjük, próbálja újra később.');
+      // Hiba esetén hibaüzenetet jeleníthetünk meg
     } finally {
       setSending(false);
     }
   };
 
-  // Új beszélgetés kezdése
+  /**
+   * Új beszélgetés indítása
+   */
   const startNewConversation = () => {
+    // Generálunk egy egyedi azonosítót az új beszélgetésnek
     const newConversationId = `conv-${Date.now()}`;
+    
     const newConversation: Conversation = {
       id: newConversationId,
       title: 'Új beszélgetés',
       createdAt: new Date().toISOString(),
-      messages: []
+      messages: [],
     };
     
     const updatedConversations = [newConversation, ...conversations];
@@ -282,30 +316,41 @@ export default function AgentDetailPage() {
         JSON.stringify(updatedConversations)
       );
     }
+    
+    // Bezárjuk a beszélgetési előzményeket
+    setShowConversationHistory(false);
   };
 
-  // Beszélgetés váltása
+  /**
+   * Váltás másik beszélgetésre
+   */
   const switchConversation = (conversationId: string) => {
+    // Megkeressük a kiválasztott beszélgetést
     const selectedConversation = conversations.find(conv => conv.id === conversationId);
+    
     if (selectedConversation) {
       setActiveConversationId(conversationId);
       setChatMessages(selectedConversation.messages);
+      
+      // Bezárjuk a beszélgetési előzményeket
       setShowConversationHistory(false);
     }
   };
 
+  // Betöltés közben
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-bg text-white flex justify-center items-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
       </div>
     );
   }
 
+  // Ha nem találtuk meg az agent-et
   if (!agent) {
     return (
-      <div className="min-h-screen bg-dark-bg text-white flex flex-col justify-center items-center">
-        <h1 className="text-2xl font-bold mb-4">Agent nem található</h1>
+      <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center">
+        <h2 className="text-2xl font-bold mb-4">Agent nem található</h2>
         <p className="text-gray-400 mb-6">A keresett agent nem létezik vagy nem érhető el.</p>
         <Link
           href={`/dashboard/${clientId}`}
@@ -319,17 +364,17 @@ export default function AgentDetailPage() {
 
   return (
     <div className="min-h-screen bg-dark-bg text-white flex flex-col">
-      {/* Header */}
-      <header className="bg-dark-surface p-4 shadow-md">
+      {/* Üveg hatású fejléc */}
+      <header className="glass-header p-4 shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Link
               href={`/dashboard/${clientId}`}
               className="text-gray-400 hover:text-white transition-colors"
             >
-              &larr; Vissza
+              <span className="inline-block mr-2">←</span> Vissza
             </Link>
-            <h1 className="text-2xl font-bold font-serif">{agent.name}</h1>
+            <h1 className="text-2xl font-bold font-serif truncate">{agent.name}</h1>
             <span
               className={`px-2 py-1 text-xs rounded-full ${
                 agent.status === 'active'
@@ -340,143 +385,115 @@ export default function AgentDetailPage() {
               {agent.status === 'active' ? 'Aktív' : 'Inaktív'}
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-300">Ügyfél: {clientId}</span>
-            <Link
-              href="/"
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors"
-            >
-              Kijelentkezés
-            </Link>
-          </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="container mx-auto px-4 py-8 mb-16 flex-1 flex flex-col md:flex-row gap-6">
-        {/* Agent információk */}
-        <div className="w-full md:w-1/3">
-          <div className="bg-dark-surface rounded-lg p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Agent Információk</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-400">Leírás</h3>
-                <p className="text-white">{agent.description}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-400">Típus</h3>
-                <p className="text-white">{agent.type}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-400">Létrehozva</h3>
-                <p className="text-white">{new Date(agent.createdAt).toLocaleString('hu')}</p>
-              </div>
-              {agent.lastActive && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-400">Utoljára aktív</h3>
-                  <p className="text-white">{new Date(agent.lastActive).toLocaleString('hu')}</p>
-                </div>
-              )}
+      {/* Agent információk */}
+      <div className="bg-dark-surface p-4 shadow-md">
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-4">
+            <div>
+              <p className="text-gray-400">{agent.description}</p>
+              <p className="text-sm text-gray-500 mt-2">
+                Típus: {agent.type} | Létrehozva: {new Date(agent.createdAt).toLocaleDateString('hu')}
+                {agent.lastActive && ` | Utoljára aktív: ${new Date(agent.lastActive).toLocaleString('hu')}`}
+              </p>
             </div>
-          </div>
-
-          {/* Beszélgetési előzmények */}
-          <div className="bg-dark-surface rounded-lg p-6 shadow-lg mt-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Beszélgetési előzmények</h2>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowConversationHistory(!showConversationHistory)}
-                className="text-sm text-gray-400 hover:text-white"
+                className="px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors text-sm"
               >
-                {showConversationHistory ? 'Elrejtés' : 'Mutatás'}
+                Előzmények {showConversationHistory ? '↑' : '↓'}
+              </button>
+              <button
+                onClick={startNewConversation}
+                className="px-3 py-1 bg-accent hover:bg-opacity-90 rounded-md transition-colors text-sm"
+              >
+                Új beszélgetés
               </button>
             </div>
-            
-            {showConversationHistory && (
-              <div className="space-y-2 max-h-80 overflow-y-auto">
-                {conversations.map((conv) => (
-                  <button
-                    key={conv.id}
-                    onClick={() => switchConversation(conv.id)}
-                    className={`w-full text-left p-3 rounded-md transition-colors ${
-                      activeConversationId === conv.id
-                        ? 'bg-gray-800 text-white'
-                        : 'hover:bg-gray-800 text-gray-400'
-                    }`}
+          </div>
+        </div>
+      </div>
+
+      {/* Beszélgetési előzmények (csak ha láthatók) */}
+      {showConversationHistory && (
+        <div className="bg-dark-surface border-t border-gray-800 p-4">
+          <div className="container mx-auto">
+            <h3 className="text-lg font-semibold mb-3">Beszélgetési előzmények</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {conversations.map(conv => (
+                <div
+                  key={conv.id}
+                  onClick={() => switchConversation(conv.id)}
+                  className={`p-3 rounded-md cursor-pointer transition-colors ${
+                    activeConversationId === conv.id
+                      ? 'bg-gray-700'
+                      : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                >
+                  <h4 className="font-medium truncate">{conv.title}</h4>
+                  <p className="text-xs text-gray-400">
+                    {new Date(conv.createdAt).toLocaleString('hu')} • {conv.messages.length} üzenet
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Chat terület */}
+      <main className="flex-grow container mx-auto p-4 mb-20">
+        <div className="bg-dark-surface rounded-lg shadow-lg overflow-hidden flex flex-col h-[calc(100vh-300px)]">
+          {/* Chat üzenetek */}
+          <div ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto">
+            {chatMessages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                <p className="mb-2">Még nincs üzenet ebben a beszélgetésben.</p>
+                <p>Kezdjen el beszélgetni az agenttel az alábbi mezőben.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {chatMessages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className="font-medium truncate">{conv.title}</div>
-                    <div className="text-xs opacity-70">
-                      {new Date(conv.createdAt).toLocaleString('hu')}
+                    <div
+                      className={`max-w-[80%] md:max-w-[70%] p-3 rounded-lg ${
+                        message.role === 'user'
+                          ? 'bg-accent text-white'
+                          : 'bg-gray-800 text-gray-100'
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-xs mt-1 opacity-70">
+                        {new Date(message.timestamp).toLocaleTimeString('hu')}
+                      </p>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             )}
-            
-            <button
-              onClick={startNewConversation}
-              className="mt-4 w-full py-2 px-4 bg-accent hover:bg-opacity-90 text-white rounded-md transition-colors"
-            >
-              + Új beszélgetés
-            </button>
           </div>
-        </div>
 
-        {/* Chat felület */}
-        <div className="w-full md:w-2/3 flex flex-col">
-          <div className="bg-dark-surface rounded-lg p-6 shadow-lg flex-1 flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Beszélgetés az Agent-tel</h2>
-              {activeConversationId && (
-                <div className="text-sm text-gray-400">
-                  {conversations.find(c => c.id === activeConversationId)?.title || 'Beszélgetés'}
-                </div>
-              )}
-            </div>
-            
-            {/* Chat üzenetek */}
-            <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-              {chatMessages.length === 0 ? (
-                <div className="text-center text-gray-400 py-8">
-                  <p>Még nincs üzenet. Kezdjen el beszélgetni az agent-tel!</p>
-                </div>
-              ) : (
-                chatMessages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-lg p-3 ${
-                        msg.role === 'user'
-                          ? 'bg-accent text-white'
-                          : 'bg-gray-800 text-white'
-                      }`}
-                    >
-                      <div className="text-sm whitespace-pre-wrap">{msg.content}</div>
-                      <div className="text-xs mt-1 opacity-70">
-                        {new Date(msg.timestamp).toLocaleTimeString('hu')}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            {/* Üzenet küldő form */}
+          {/* Üzenet input */}
+          <div className="p-4 border-t border-gray-800">
             <form onSubmit={sendMessage} className="flex gap-2">
               <input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Írjon üzenetet..."
-                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+                onChange={e => setNewMessage(e.target.value)}
+                placeholder="Írja be üzenetét..."
                 disabled={sending}
+                className="flex-grow p-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-accent hover:bg-opacity-90 text-white rounded-md transition-colors disabled:opacity-50"
                 disabled={sending || !newMessage.trim()}
+                className="px-4 py-2 bg-accent hover:bg-opacity-90 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {sending ? 'Küldés...' : 'Küldés'}
               </button>
@@ -485,12 +502,8 @@ export default function AgentDetailPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-dark-surface p-4 w-full">
-        <div className="container mx-auto text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} SoltAI Solutions. Minden jog fenntartva.
-        </div>
-      </footer>
+      {/* Lábléc a copyright szöveggel */}
+      <Footer />
     </div>
   );
 } 
