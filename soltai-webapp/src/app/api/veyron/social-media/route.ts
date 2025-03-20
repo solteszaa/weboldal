@@ -105,19 +105,7 @@ export async function POST(req: NextRequest) {
         const { stdout: publishOutput } = await execPromise(publishPostCommand);
         const publishResult = JSON.parse(publishOutput);
         
-        try {
-          // WebhookSender kód futtatása (nem kritikus)
-          // Újrahasználjuk ugyanazt a paraméterfájlt
-          const WebhookSenderPath = path.normalize(`${process.cwd()}/../veyron_agency/social_media_agent/tools/WebhookSender.py`);
-          const webhookCommand = `python "${WebhookSenderPath}" "${publishParamsPath}"`;
-          
-          const { stdout: webhookOutput } = await execPromise(webhookCommand);
-          console.log("Webhook küldés eredménye:", webhookOutput);
-        } catch (webhookError) {
-          console.error("Webhook küldési hiba:", webhookError);
-          // Folytatás webhook hiba esetén
-        }
-        
+        // Webhook küldés helyett visszatérünk a generált poszttal és minden adattal
         // Sikeres válasz
         return NextResponse.json({
           success: true,

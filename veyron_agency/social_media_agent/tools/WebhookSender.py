@@ -36,12 +36,11 @@ class WebhookSender(BaseTool):
             return "Hiba: WEBHOOK_URL környezeti változó nincs beállítva."
         
         try:
-            # Hozzuk létre a webhook payload objektumot
+            # Hozzuk létre a webhook payload objektumot (tone nélkül)
             webhook_data = {
                 "property_name": self.property_name,
                 "content": self.post_content,
                 "image_urls": self.image_urls,
-                "tone": "professional"  # A hangnem mindig professzionális
             }
             
             # Küldjük el a webhook-ra
