@@ -98,26 +98,38 @@ class OpenAIPostGenerator(BaseTool):
 if __name__ == "__main__":
     # Teszt futtatása vagy parancssori argumentumok kezelése
     if len(sys.argv) > 1:
-        # Parancssori argumentumok használata
-        property_type = sys.argv[1]
-        location = sys.argv[2]
-        size = sys.argv[3]
-        rooms = sys.argv[4]
-        price = sys.argv[5]
-        special_features = sys.argv[6] if len(sys.argv) > 6 else ""
-        tone = sys.argv[7] if len(sys.argv) > 7 else "professional"
-        
-        generator = OpenAIPostGenerator(
-            property_type=property_type,
-            location=location,
-            size=size,
-            rooms=rooms,
-            price=price,
-            special_features=special_features,
-            tone=tone
-        )
-        result = generator.run()
-        print(json.dumps(result) if isinstance(result, dict) else result)
+        try:
+            # Paraméterek beolvasása fájlból
+            params_file_path = sys.argv[1]
+            with open(params_file_path, 'r', encoding='utf-8') as f:
+                params = json.load(f)
+            
+            # Paraméterek kinyerése
+            property_type = params.get('property_type', '')
+            location = params.get('location', '')
+            size = params.get('size', '')
+            rooms = params.get('rooms', '')
+            price = params.get('price', '')
+            special_features = params.get('special_features', '')
+            tone = params.get('tone', 'professional')
+            
+            # Tool példányosítása
+            generator = OpenAIPostGenerator(
+                property_type=property_type,
+                location=location,
+                size=size,
+                rooms=rooms,
+                price=price,
+                special_features=special_features,
+                tone=tone
+            )
+            result = generator.run()
+            print(json.dumps(result) if isinstance(result, dict) else result)
+        except Exception as e:
+            print(json.dumps({
+                "status": "error",
+                "message": str(e)
+            }))
     else:
         # Teszt
         generator = OpenAIPostGenerator(

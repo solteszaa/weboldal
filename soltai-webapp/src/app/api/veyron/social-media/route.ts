@@ -45,7 +45,23 @@ export async function POST(req: NextRequest) {
       
       try {
         // Python interpretert hívunk
-        const generatePostCommand = `python "${OpenAIPostGeneratorPath}" "${property_type}" "${location}" "${size}" "${rooms}" "${price}" "${special_features}" "${tone}"`;
+        // Létrehozunk ideiglenes adatfájlt a paraméterek átadásához
+        const postParamsPath = path.normalize(`${process.cwd()}/../temp_post_params.json`);
+        const postParams = {
+          property_type,
+          location,
+          size,
+          rooms,
+          price,
+          special_features,
+          tone
+        };
+        
+        // Paraméterek mentése fájlba
+        await fs.writeFile(postParamsPath, JSON.stringify(postParams), 'utf-8');
+        
+        // Python script meghívása fájl paraméterrel
+        const generatePostCommand = `python "${OpenAIPostGeneratorPath}" "${postParamsPath}"`;
         console.log("Executing command:", generatePostCommand);
         
         const { stdout: postOutput } = await execPromise(generatePostCommand);
@@ -70,8 +86,20 @@ export async function POST(req: NextRequest) {
       
       // PostPublisher kód futtatása
       try {
+        // Létrehozunk ideiglenes adatfájlt a paraméterek átadásához
+        const publishParamsPath = path.normalize(`${process.cwd()}/../temp_publish_params.json`);
+        const publishParams = {
+          post_content: generatedPost,
+          property_name,
+          image_urls
+        };
+        
+        // Paraméterek mentése fájlba
+        await fs.writeFile(publishParamsPath, JSON.stringify(publishParams), 'utf-8');
+        
+        // Python script meghívása fájl paraméterrel
         const PostPublisherPath = path.normalize(`${process.cwd()}/../veyron_agency/social_media_agent/tools/PostPublisher.py`);
-        const publishPostCommand = `python "${PostPublisherPath}" "${generatedPost}" "${property_name}" "${JSON.stringify(image_urls)}"`;
+        const publishPostCommand = `python "${PostPublisherPath}" "${publishParamsPath}"`;
         console.log("Publishing post...");
         
         const { stdout: publishOutput } = await execPromise(publishPostCommand);
@@ -79,8 +107,9 @@ export async function POST(req: NextRequest) {
         
         try {
           // WebhookSender kód futtatása (nem kritikus)
+          // Újrahasználjuk ugyanazt a paraméterfájlt
           const WebhookSenderPath = path.normalize(`${process.cwd()}/../veyron_agency/social_media_agent/tools/WebhookSender.py`);
-          const webhookCommand = `python "${WebhookSenderPath}" "${generatedPost}" "${property_name}" "${JSON.stringify(image_urls)}"`;
+          const webhookCommand = `python "${WebhookSenderPath}" "${publishParamsPath}"`;
           
           const { stdout: webhookOutput } = await execPromise(webhookCommand);
           console.log("Webhook küldés eredménye:", webhookOutput);

@@ -70,18 +70,30 @@ class WebhookSender(BaseTool):
 if __name__ == "__main__":
     # Teszt futtatása vagy parancssori argumentumok kezelése
     if len(sys.argv) > 1:
-        # Parancssori argumentumok használata
-        post_content = sys.argv[1]
-        property_name = sys.argv[2]
-        image_urls = json.loads(sys.argv[3]) if len(sys.argv) > 3 else []
-        
-        sender = WebhookSender(
-            post_content=post_content,
-            property_name=property_name,
-            image_urls=image_urls
-        )
-        result = sender.run()
-        print(json.dumps(result) if isinstance(result, dict) else result)
+        try:
+            # Paraméterek beolvasása fájlból
+            params_file_path = sys.argv[1]
+            with open(params_file_path, 'r', encoding='utf-8') as f:
+                params = json.load(f)
+            
+            # Paraméterek kinyerése
+            post_content = params.get('post_content', '')
+            property_name = params.get('property_name', '')
+            image_urls = params.get('image_urls', [])
+            
+            # Tool példányosítása
+            sender = WebhookSender(
+                post_content=post_content,
+                property_name=property_name,
+                image_urls=image_urls
+            )
+            result = sender.run()
+            print(json.dumps(result) if isinstance(result, dict) else result)
+        except Exception as e:
+            print(json.dumps({
+                "status": "error",
+                "message": str(e)
+            }))
     else:
         # Teszt futtatása
         sender = WebhookSender(
