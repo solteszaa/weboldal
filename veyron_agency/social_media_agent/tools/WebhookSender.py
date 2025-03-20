@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import requests
 import json
 import sys
+import re
 
 load_dotenv()  # Környezeti változók betöltése
 
@@ -28,19 +29,48 @@ class WebhookSender(BaseTool):
         default=[], description="A poszthoz csatolandó képek URL-jeinek listája az ImgBB-ről"
     )
     
+    hashtags: str = Field(
+        default="", description="Előre kinyert hashtagek a posztból"
+    )
+    
     def run(self):
         """
         Elküldi a posztot és a képek URL-jeit a megadott webhook URL-re.
+        A hashtegeket külön változóban küldi el.
+        A képeket 9 különálló változóban küldi el (kep1-kep9).
         """
         if not webhook_url:
             return "Hiba: WEBHOOK_URL környezeti változó nincs beállítva."
         
         try:
-            # Hozzuk létre a webhook payload objektumot (tone nélkül)
+            # Ha nincs előre megadva hashtag, akkor kinyerjük a posztból
+            if not self.hashtags:
+                hashtags = " ".join(re.findall(r'#\w+', self.post_content))
+            else:
+                hashtags = self.hashtags
+            
+            # Hashtagek eltávolítása a tartalomból
+            content_without_hashtags = re.sub(r'#\w+\s*', '', self.post_content).strip()
+            
+            # Képek URL-jeinek beállítása kep1-kep9 változókba
+            image_variables = {}
+            for i in range(1, 10):  # 1-től 9-ig
+                key = f"kep{i}"
+                if i <= len(self.image_urls):
+                    image_variables[key] = self.image_urls[i-1]
+                else:
+                    image_variables[key] = ""
+            
+            # Képek száma
+            image_count = len(self.image_urls)
+            
+            # Hozzuk létre a webhook payload objektumot (hashtagek külön, képek külön változókban)
             webhook_data = {
                 "property_name": self.property_name,
-                "content": self.post_content,
-                "image_urls": self.image_urls,
+                "content": content_without_hashtags,
+                "hashtags": hashtags,
+                "image_count": image_count,  # Képek száma
+                **image_variables  # kep1, kep2, ..., kep9 változók
             }
             
             # Küldjük el a webhook-ra
@@ -79,12 +109,14 @@ if __name__ == "__main__":
             post_content = params.get('post_content', '')
             property_name = params.get('property_name', '')
             image_urls = params.get('image_urls', [])
+            hashtags = params.get('hashtags', '')
             
             # Tool példányosítása
             sender = WebhookSender(
                 post_content=post_content,
                 property_name=property_name,
-                image_urls=image_urls
+                image_urls=image_urls,
+                hashtags=hashtags
             )
             result = sender.run()
             print(json.dumps(result) if isinstance(result, dict) else result)

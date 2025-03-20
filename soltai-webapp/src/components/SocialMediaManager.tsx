@@ -170,15 +170,35 @@ export default function SocialMediaManager() {
     try {
       setIsSendingToWebhook(true);
       
+      // Hashtagek kinyerése a posztból
+      const hashtagRegex = /#\w+/g;
+      const hashtagMatches = generatedPost.content.match(hashtagRegex) || [];
+      const hashtags = hashtagMatches.join(' ');
+      
+      // Hashtagek eltávolítása a tartalomból
+      const contentWithoutHashtags = generatedPost.content.replace(hashtagRegex, '').trim();
+      
+      // Képek darabszáma
+      const imageCount = generatedPost.image_urls.length;
+      
+      // Képek előkészítése kep1-kep9 változókba
+      const kepObj: Record<string, string> = {};
+      for (let i = 1; i <= 9; i++) {
+        const key = `kep${i}`;
+        kepObj[key] = i <= generatedPost.image_urls.length ? generatedPost.image_urls[i-1] : "";
+      }
+      
       const response = await fetch('/api/veyron/social-media/webhook', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          post_content: generatedPost.content,
+          post_content: contentWithoutHashtags,
           property_name: generatedPost.property_name,
-          image_urls: generatedPost.image_urls
+          hashtags,
+          image_count: imageCount,
+          ...kepObj  // kep1, kep2, ..., kep9 változók
         }),
       });
       

@@ -13,7 +13,17 @@ export async function POST(req: NextRequest) {
     const {
       post_content,
       property_name,
-      image_urls = []
+      hashtags,
+      image_count = 0,
+      kep1 = "",
+      kep2 = "",
+      kep3 = "",
+      kep4 = "",
+      kep5 = "",
+      kep6 = "",
+      kep7 = "",
+      kep8 = "",
+      kep9 = ""
     } = body;
 
     // Validáció - alapvető adatok megléte
@@ -25,11 +35,16 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+      // Az image_urls tömb létrehozása a nem üres kép URL-ekből
+      const image_urls = [kep1, kep2, kep3, kep4, kep5, kep6, kep7, kep8, kep9].filter(url => url !== "");
+
       // Létrehozunk ideiglenes adatfájlt a paraméterek átadásához
       const webhookParamsPath = path.normalize(`${process.cwd()}/../temp_webhook_params.json`);
       const webhookParams = {
         post_content,
         property_name,
+        hashtags,
+        image_count,
         image_urls
       };
       
